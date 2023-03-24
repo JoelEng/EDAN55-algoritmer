@@ -1,4 +1,5 @@
 from markingtrees import *
+import statistics
 
 
 def R1():
@@ -37,11 +38,28 @@ def R3():
     return count
 
 
-reset()
-print("R1 iterated: " + str(R1()))
+res1 = []
+res2 = []
+res3 = []
 
-reset()
-print("R2 iterated: " + str(R2()))
+for i in range(15):
+    print(f"Iteration {str(i)}")
+    reset()
+    result1 = R1()
+    res1.append(result1)
+    print("R1 iterated: " + str(result1))
 
-reset()
-print("R3 iterated: " + str(R3()))
+    reset()
+    result2 = R2()
+    res2.append(result2)
+    print("R2 iterated: " + str(result2))
+
+    reset()
+    result3 = R3()
+    res3.append(result3)
+    print("R3 iterated: " + str(result3))
+
+print(f"\nn: {n}")
+for idx, res in enumerate([res1, res2, res3]):
+    print(f"R{idx+1} Mean:\t{str(statistics.mean(res))}")
+    print(f"R{idx+1} Std dev:\t{str(statistics.stdev(res))}")

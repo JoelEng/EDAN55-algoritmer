@@ -2,10 +2,13 @@ from pprint import pprint
 from graph import graph
 from itertools import chain, combinations
 
+ROOT = "1"
 
 adjacent_nodes = {}
 bags = {}
 independent_sets = {}
+leaf_nodes_list = []
+calculations = dict(dict())
 
 
 def powerset(iterable):
@@ -13,22 +16,36 @@ def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
+def leaf_nodes(tree, node = "1"):
+    if not node in tree:
+        leaf_nodes_list.append(node)
+        return True
+    children = tree[node]
 
-def checkIndependent(nodes, graphI):
+    for child in children:
+        leaf_nodes(tree, child)
+
+def neighbours(ps):
+    neighbours = set()
+    for s in ps:
+        neighbours.update(graph[s])
+    return neighbours
+
+def checkIndependent(name, nodes, graphI):
     for node in nodes:
         if graphI[node] & set(nodes):
-            print("False")
             return False
-    print("True")
-    independent_sets[nodes] = len(nodes)
+    independent_sets[name].add(nodes)
     return True
 
-# def intersection(nodes, graphI):
-#    intersect = [value for value in nodes if value in graphI]
-#    return intersect
 
 
-graph = graph("web4.gr", "web4.td")
+def intersection(nodes, graphI):
+    intersect = [value for value in nodes if value in graphI]
+    return intersect
+
+
+graph = graph("eppstein.gr", "eppstein.td")
 graph, tdGraph, bags = graph.returnDicts()
 print("GRAPH:")
 pprint(graph)
@@ -42,12 +59,27 @@ weights = dict()
 for name, vertices in bags.items():
     ps = powerset(vertices)
     max_val = 0
-
+    independent_sets[name] = set()
     for s in ps:
-        if checkIndependent(s, graph):
+        if checkIndependent(name ,s, graph):
             max_val = max(max_val, len(s))
     weights[name] = max_val
 
-print("Max independent sets")
-print(weights)
+print("All independent sets")
 pprint(independent_sets)
+
+print("Leaf nodes")
+leaf_nodes(tdGraph)
+pprint(leaf_nodes_list)
+
+for leaf in leaf_nodes_list:
+    for s in independent_sets[leaf]:
+        if not leaf in calculations:
+            calculations[leaf] = {s : len(s) }
+        else:
+            calculations[leaf].update( {s : len(s)})
+
+
+
+print("Calc")
+pprint(calculations)

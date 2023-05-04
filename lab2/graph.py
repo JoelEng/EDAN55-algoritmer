@@ -1,13 +1,10 @@
-ROOT = "1"
-
-
 class graph:
-    def __init__(self, file1, file2):
-        gr = open("./data/"+file1, "r").readlines()
-        td = open("./data/"+file2, "r").readlines()
+    def __init__(self, file, root):
+        gr = open("./data/"+file+".gr", "r").readlines()
+        td = open("./data/"+file+".td", "r").readlines()
         self.G = dict()
         self.T = dict()
-        self.bags = dict()
+        self.nodes = dict()
         self.powersets = dict()
 
         for line in gr:
@@ -30,16 +27,17 @@ class graph:
                 self.treeWidth = int(words[3]) - 1
                 self.tdVertices = words[4]
             elif words[0] == "b":
-                self.bags[words[1]] = words[2:len(words)]
+                self.nodes[words[1]] = dict()
+                self.nodes[words[1]]["fu"] = dict()
+                self.nodes[words[1]]["bag"] = words[2:len(words)]
             else:
                 v0, v1 = words[0], words[1]
                 self.T.setdefault(v0, set()).add(v1)
                 self.T.setdefault(v1, set()).add(v0)
-
-        self.T = self.makeTree(self.T, ROOT)
+        self.makeTree(self.T, root)
 
     def returnDicts(self):
-        return self.G, self.T, self.bags
+        return self.G, self.nodes
 
     def makeTree(self, graph, root):
         visited = [root]
@@ -52,4 +50,6 @@ class graph:
                 if v not in visited:
                     tree.setdefault(key, set()).add(v)
                     visited.append(v)
-        return tree
+
+        for key, val in tree.items():
+            self.nodes[key]["children"] = val

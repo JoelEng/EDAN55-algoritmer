@@ -1,6 +1,6 @@
 class graph:
     def __init__(self, file, root):
-        gr = open("./data/"+file+".gr", "r").readlines()
+        gr = open("./data/" + file + ".gr", "r").readlines()
         td = open("./data/"+file+".td", "r").readlines()
         self.G = dict()
         self.T = dict()

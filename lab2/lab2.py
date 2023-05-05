@@ -9,12 +9,8 @@ ROOT = "1"
 "Nodes is a dictionary on form {bagnbr : {{bag : {set of vertices} }, {children : {set of children}} {fu : {independent sets in bag}}}}"
 graph, nodes = graph(FILE, ROOT).returnDicts()
 
-
-def powerset(iterable):
-    """Creates powerset from a set\n
-    powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"""
-    s = list(iterable)
-    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+def powerset(s):
+    return [frozenset(t) for t in chain.from_iterable(combinations(s, r) for r in range(len(s)+1))]
 
 
 def neighbours(ps):
@@ -39,31 +35,38 @@ def intersection(nodes, graphI):
     return intersect
 
 
-def traverse(current=ROOT):
+def traverse(nodes, current=ROOT):
     ps = powerset(nodes[current]["bag"])
-    ind_sets = [s for s in ps if checkIndependent(s)]
+    ind_sets = frozenset([s for s in ps if checkIndependent(s)])
     if "children" not in nodes[current]:
         # current is a leaf node
-        nodes[current]["fu"] = ind_sets
-        return
+        for s in ind_sets:
+            nodes[current]["fu"][frozenset(s)] = len(s)
+        return ind_sets
 
     # current is not a leaf node
     for child in nodes[current]["children"]:
         # traverse children before self
-        traverse(child)
+        children_ind_sets = traverse(nodes, child)
+        ind_sets = (children_ind_sets | ind_sets)
+        print("PSPS " + str(powerset(ind_sets)))
 
     independent_sets = [s for s in ind_sets if checkIndependent(s)]
-    nodes[current]["fu"] = independent_sets
-    return
 
+    for s in independent_sets:
+        nodes[current]["fu"][frozenset(s)] = len(s)
+    return frozenset(independent_sets)
+
+
+traverse(nodes)
 
 print("GRAPH:")
 pprint(graph)
 print("NODES:")
 pprint(nodes)
 
-traverse()
 pprint("")
+
 
 # for name, vertices in bags.items():
 #     ps = powerset(vertices)

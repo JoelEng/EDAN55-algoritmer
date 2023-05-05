@@ -2,6 +2,11 @@ from pprint import pprint
 from graph import graph
 from itertools import chain, combinations
 
+
+# En funktion som traversar
+# En funktion som beräknar
+#
+
 FILE = "eppstein"
 ROOT = "1"
 
@@ -9,53 +14,71 @@ ROOT = "1"
 "Nodes is a dictionary on form {bagnbr : {{bag : {set of vertices} }, {children : {set of children}} {fu : {independent sets in bag}}}}"
 graph, nodes = graph(FILE, ROOT).returnDicts()
 
+
+def powerse1t(s):
+    return [tuple(t) for t in chain.from_iterable(combinations(s, r) for r in range(len(s)+1))]
+
+
 def powerset(s):
-    return [frozenset(t) for t in chain.from_iterable(combinations(s, r) for r in range(len(s)+1))]
+    power_set = [[]]
+    for elem in s:
+        for sub_set in power_set:
+            power_set = power_set+[list(sub_set)+[elem]]
+    return power_set
 
 
-def neighbours(ps):
-    "Adjacent nodes, nodes that cannot be in the same independent set"
-    neighbours = set()
-    for s in ps:
-        neighbours.update(graph[s])
-    return neighbours
+# def neighbours(ps):
+#     "Adjacent nodes, nodes that cannot be in the same independent set"
+#     neighbours = set()
+#     for s in ps:
+#         neighbours.update(graph[s])
+#     return neighbours
 
 
 def checkIndependent(vertices):
     "Check if given set is an independent one"
+    # list(map(lambda s: str(s), vertices))
     for vertex in vertices:
         if graph[vertex] & set(vertices):
             return False
     return True
 
 
-def intersection(nodes, graphI):
-    "Returns the intersection"
-    intersect = [value for value in nodes if value in graphI]
-    return intersect
+# def intersection(nodes, graphI):
+#     "Returns the intersection"
+#     intersect = [value for value in nodes if value in graphI]
+#     return intersect
+
+def calc_ft(independent_set, children):
+    "(10.18)"
+    ft = len(independent_set)
+    for child in children:
+        max_value = 0
+        for key, val in nodes[child]["fu"].items():
+            calc_ft(key, nodes[child]["children"])
+            value = nodes[child]["fu"][val] - len(independent_set & key)
+            max_value = max(value, max_value)
+        ft += max_value
+    return ft
 
 
 def traverse(nodes, current=ROOT):
     ps = powerset(nodes[current]["bag"])
-    ind_sets = frozenset([s for s in ps if checkIndependent(s)])
+    ind_sets = set([s for s in ps if checkIndependent(s)])
     if "children" not in nodes[current]:
         # current is a leaf node
         for s in ind_sets:
-            nodes[current]["fu"][frozenset(s)] = len(s)
-        return ind_sets
+            nodes[current]["fu"][tuple(s)] = len(s)
+        return
 
     # current is not a leaf node
     for child in nodes[current]["children"]:
         # traverse children before self
-        children_ind_sets = traverse(nodes, child)
-        ind_sets = (children_ind_sets | ind_sets)
-        print("PSPS " + str(powerset(ind_sets)))
+        traverse(nodes, child)
+        # pprint(ind_sets)
 
-    independent_sets = [s for s in ind_sets if checkIndependent(s)]
-
-    for s in independent_sets:
+    for s in ind_sets:
         nodes[current]["fu"][frozenset(s)] = len(s)
-    return frozenset(independent_sets)
 
 
 traverse(nodes)

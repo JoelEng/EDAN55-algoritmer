@@ -40,7 +40,7 @@ class graph:
         self.makeTree(self.T, root)
 
     def returnDicts(self):
-        return self.G, self.nodes
+        return self.G, self.nodes, self.treeWidth, self.grVertices
 
     def makeTree(self, graph, root):
         toSearch = set(root)

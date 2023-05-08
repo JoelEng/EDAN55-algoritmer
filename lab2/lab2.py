@@ -1,7 +1,7 @@
 from pprint import pprint
 from graph import graph
 
-FILE = "TutteGraph"
+FILE = "DorogovtsevGoltsevMendesGraph"
 ROOT = "1"
 
 
@@ -35,9 +35,6 @@ def calc_ft(current, children, u):
             if (set(ui) & set(nodes[current]["bag"])) == (set(u) & set(nodes[child]["bag"])):
                 value = fui - len(u & ui)
                 max_value = max(value, max_value)
-                # new_set = frozenset.union(ui, u)
-                # new_set = powerset(new_set)
-                # nodes[current][]
 
         ft += max_value
     return ft
@@ -46,13 +43,11 @@ def calc_ft(current, children, u):
 def traverse(nodes, current=ROOT):
     ps = powerset(nodes[current]["bag"])
     ind_sets = set([frozenset(u) for u in ps if checkIndependent(u)])
-
     if "children" not in nodes[current]:
         # current is a leaf node
         for u in ind_sets:
             nodes[current]["fu"][frozenset(u)] = len(u)
         return max(nodes[current]["fu"].values())
-
     for child in nodes[current]["children"]:
         traverse(nodes, child)  # traverse children before self
 
@@ -62,9 +57,12 @@ def traverse(nodes, current=ROOT):
     return max(nodes[current]["fu"].values())
 
 
+# pprint(nodes)
 res = traverse(nodes)
-print("GRAPH:")
-pprint(graph)
-print("NODES:")
-pprint(nodes)
+
+# print("GRAPH:")
+# pprint(graph)
+
+# print("NODES:")
+# pprint(nodes)
 print("max value: " + str(res))

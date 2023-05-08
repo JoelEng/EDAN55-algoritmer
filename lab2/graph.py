@@ -1,3 +1,6 @@
+from pprint import pprint
+
+
 class graph:
     def __init__(self, file, root):
         gr = open("./data/" + file + ".gr", "r").readlines()
@@ -40,16 +43,17 @@ class graph:
         return self.G, self.nodes
 
     def makeTree(self, graph, root):
-        visited = [root]
+        toSearch = set(root)
+        done = set()
         tree = dict()
-        for v in graph[root]:
-            tree.setdefault(root, set()).add(v)
-            visited.append(v)
-        for key, val in graph.items():
-            for v in val:
-                if v not in visited:
-                    tree.setdefault(key, set()).add(v)
-                    visited.append(v)
+
+        while len(toSearch) > 0:
+            current = toSearch.pop()
+            for n in graph[current]:
+                if n not in toSearch and n not in done:
+                    tree.setdefault(current, set()).add(n)
+                    toSearch.add(n)
+            done.add(current)
 
         for key, val in tree.items():
             self.nodes[key]["children"] = val

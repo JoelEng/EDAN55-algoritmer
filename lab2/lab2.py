@@ -1,12 +1,7 @@
 from pprint import pprint
 from graph import graph
 
-FILE = "DorogovtsevGoltsevMendesGraph"
 ROOT = "1"
-
-
-"Nodes is a dictionary on form {bagnbr : {{bag : {set of vertices} }, {children : {set of children}} {fu : {independent sets in bag}}}}"
-graph, nodes = graph(FILE, ROOT).returnDicts()
 
 
 def powerset(s):
@@ -57,12 +52,18 @@ def traverse(nodes, current=ROOT):
     return max(nodes[current]["fu"].values())
 
 
-# pprint(nodes)
-res = traverse(nodes)
+def run(file):
+    global graph, nodes
+    "Nodes is a dictionary on form {bagnbr : {{bag : {set of vertices} }, {children : {set of children}} {fu : {independent sets in bag}}}}"
+    graph, nodes, w, n = graph(file, ROOT).returnDicts()
 
-# print("GRAPH:")
-# pprint(graph)
+    # pprint(nodes)
+    res = traverse(nodes)
 
-# print("NODES:")
-# pprint(nodes)
-print("max value: " + str(res))
+    # print("GRAPH:")
+    # pprint(graph)
+
+    # print("NODES:")
+    # pprint(nodes)
+
+    print(f"{file} & ${n}$ & ${w}$ & ${res}$ \\\\")

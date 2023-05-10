@@ -1,10 +1,11 @@
 import random
 import copy
 import matplotlib
+from pprint import pprint
 from tqdm import tqdm
 matplotlib.use('tkagg')
 
-FILE = "data/pw09_100.9.txt"
+FILE = "./data/test.txt"
 
 edges, weights, vertices = [], {}, set()
 f = open(FILE)
@@ -29,9 +30,12 @@ def checkCut(A, edges):
 
 def R(A):
     for vertex in vertices:
-        if random.getrandbits(1):
-            A.add(vertex)
+        randAssign(vertex, A)
     return checkCut(A, edges)
+
+def randAssign(vertex, A):
+    if random.getrandbits(1):
+            A.add(vertex)
 
 
 def S(A):
@@ -53,32 +57,36 @@ def S(A):
             failedSwaps = 0
         else:
             failedSwaps += 1
-
+    pprint("A: ")
+    pprint(A)
     return currentMax
 
 
 def RS(A):
-    R(A)
+    for vertex in vertices:
+        randAssign(vertex, A)
     return S(A)
 
 
 def run():
     valuesR, valuesS, valuesRS = [], [], []
     nbr = 100
-    valuesS.append(S(set()))
-    for _ in tqdm(range(nbr)):
-        valuesR.append(R(set()))
-        valuesRS.append(RS(set()))
+    #valuesS.append(S(set()))
+    #for _ in tqdm(range(nbr)):
+    #    valuesR.append(R(set()))
+    #    valuesRS.append(RS(set(1,2)))
 
-    print("Avg R: " + str(sum(valuesR)/nbr))
-    print("max cutsize for R: " + str(max(valuesR)))
-    print("Avg S: " + str(sum(valuesS)/nbr))
-    print("max cutsize for S: " + str(max(valuesS)))
-    print("Avg RS: " + str(sum(valuesRS)/nbr))
-    print("max cutsize for RS: " + str(max(valuesRS)))
+    #print("Avg R: " + str(sum(valuesR)/nbr))
+    #print("max cutsize for R: " + str(max(valuesR)))
+    #print("Avg S: " + str(sum(valuesS)/nbr))
+    #print("max cutsize for S: " + str(max(valuesS)))
+    #print("Avg RS: " + str(sum(valuesRS)/nbr))
+    #print("max cutsize for RS: " + str(max(valuesRS)))
 
-    for v in valuesRS:
-        print(v)
+    #for v in valuesRS:
+    #    print(v)
+
+    print(S({'2','3'}))
 
 
 run()

@@ -29,7 +29,7 @@ def chooseRoad(start):
     return random.choices(ends, weights=probs)[0]
 
 
-def distribute(start):
+def monteCarlo(start):
     current = start
     road = [start]
     time = 0
@@ -41,6 +41,6 @@ def distribute(start):
     return time, road
 
 
-time, road = distribute(F)
+time, road = monteCarlo(F)
 print("Time: " + str(time) + " minutes")
 pprint("Road: " + str(road))

@@ -29,7 +29,7 @@ def chooseRoad(start):
     return random.choices(ends, weights=probs)[0]
 
 
-def monteCarlo(start):
+def randomPath(start):
     current = start
     road = [start]
     time = 0
@@ -41,6 +41,16 @@ def monteCarlo(start):
     return time, road
 
 
-time, road = monteCarlo(F)
-print("Time: " + str(time) + " minutes")
-pprint("Road: " + str(road))
+def monteCarloAverage(start, count):
+    times = []
+    for _ in range(count):
+        time, _ = randomPath(start)
+        times.append(time)
+    return sum(times)/count
+
+
+def monteCarlo():
+    averageF = monteCarloAverage(F, 100000)
+    averageP = monteCarloAverage(P, 100000)
+    print("Average F: " + str(averageF) + " minutes")
+    print("Average P: " + str(averageP) + " minutes")
